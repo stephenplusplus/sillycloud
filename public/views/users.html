@@ -1,0 +1,22 @@
+<h1>Users</h1>
+
+<ul>
+  <li ng-repeat="user in users">
+    <a ng-href="#/users/{{user.key.path[user.key.path.length - 1]}}">
+      {{user.data.name}}
+    </a>
+  </li>
+</ul>
+
+<h2>Add User</h2>
+<form>
+  <label>
+    Name:
+    <input ng-model="name" ng-disabled="saving">
+  </label>
+  <input type="submit" ng-click="addUser(name)">
+</form>
+
+<div ng-if="saving && saved">
+  Saved successfully!
+</div>

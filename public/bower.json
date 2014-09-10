@@ -1,0 +1,12 @@
+{
+  "name": "sillycloud",
+  "version": "0.0.0",
+  "authors": [
+    "Stephen Sawchuk <sawchuk@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "angular": "~1.2.24",
+    "angular-route": "~1.2.24"
+  }
+}

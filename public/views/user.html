@@ -1,0 +1,25 @@
+<h1>{{user.data.name}}</h1>
+
+<form>
+  <div ng-repeat="(property, value) in user.data">
+    <label>
+      {{property}}: <input ng-model="user.data[property]" ng-disabled="saving">
+    </label>
+  </div>
+  <br>
+  <button ng-hide="addingField" ng-click="addField()">add a field</button>
+  <div ng-show="addingField">
+    <label>
+      property name: <input ng-model="property">
+    </label>
+    <label>
+      value: <input ng-model="value">
+    </label>
+    <button ng-click="addCreatedField(property, value)">add this field</button>
+  </div>
+  <input type="submit" value="Save" ng-click="save()" ng-disabled="saving">
+</form>
+
+<div ng-if="saving && saved">
+  Saved successfully!
+</div>
