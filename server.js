@@ -1,14 +1,15 @@
 'use strict';
 
 var fs = require('fs');
-var http = require('http');
+var https = require('http');
 
 var actions = require('./actions');
 
 var APIS = {
   GET: {
     '/api/users/': actions.getUser,
-    '/api/users': actions.getUsers
+    '/api/users': actions.getUsers,
+    '/api/files/': actions.getFile
   },
   POST: {
     '/api/users/': actions.saveUser,
@@ -31,4 +32,4 @@ function handleRequest(req, res) {
     .pipe(res);
 }
 
-http.createServer(handleRequest).listen(8080);
+https.createServer(handleRequest).listen(8080);

@@ -2,10 +2,8 @@
 
 var gcloud = require('gcloud');
 
-var dataset = new gcloud.datastore.Dataset({
-  projectId: 'tactile-pulsar-697',
-  credentials: require('../keyfile.json')
-});
+var dataset = new gcloud.datastore.Dataset({ projectId: 'tactile-pulsar-697' });
+var bucket = new gcloud.storage.Bucket({ bucketName: 'sillycloud' });
 
 function getUsers(req, res) {
   var query = dataset.createQuery(['Users']);
@@ -30,12 +28,24 @@ function createUser(req, res) {
 }
 module.exports.createUser = createUser;
 
+function getFile(req, res) {
+  var filename = req.url.split('/').pop();
+  bucket.createReadStream(filename)
+    .on('error', function(err) {
+      res.end(JSON.stringify(err));
+    })
+    .pipe(res);
+}
+module.exports.getFile = getFile;
+
 function _handleResponse(res) {
   return function(err, result) {
     if (err) {
-      res.writeHead(err.message.match(/statusCode: (\d+),/)[1]);
+      res.writeHead(err.code);
+      res.end(err.message);
+      return;
     }
-    res.end(err && err.message || JSON.stringify(result, null, 2));
+    res.end(JSON.stringify(result, null, 2));
   };
 }
 
