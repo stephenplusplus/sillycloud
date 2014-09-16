@@ -1,9 +1,13 @@
 'use strict';
 
-var gcloud = require('gcloud');
+var fs = require('fs');
+var multiparty = require('multiparty');
 
-var dataset = new gcloud.datastore.Dataset({ projectId: 'nth-circlet-705' });
-var bucket = new gcloud.storage.Bucket({ bucketName: 'stephensawchuk2' });
+var PROJECT_CONFIG = require('./project.conf.json');
+var gcloud = require('gcloud')(PROJECT_CONFIG);
+
+var dataset = gcloud.datastore.dataset();
+var bucket = gcloud.storage.bucket();
 
 function getUsers(req, res) {
   var query = dataset.createQuery(['Users']);
@@ -28,6 +32,44 @@ function createUser(req, res) {
 }
 module.exports.createUser = createUser;
 
+function uploadFile(req, res) {
+  var form = new multiparty.Form();
+  form.parse(req, function(err, fields, files) {
+    var file = files.file[0];
+    fs.createReadStream(file.path)
+      .pipe(bucket.createWriteStream(fields.name[0], {
+        contentType: file.headers['content-type']
+      }))
+      .on('error', function(err) {
+        res.writeHead(err.code);
+        res.end(JSON.stringify(err));
+      })
+      .on('complete', function() {
+        res.writeHead(200);
+        res.end();
+      });
+  });
+}
+module.exports.uploadFile = uploadFile;
+
+function getFiles(req, res) {
+  bucket.list(function(err, files) {
+    if (err) {
+      res.writeHead(err.code);
+      res.end(err.message);
+      return;
+    }
+    files = files.map(function(file) {
+      return {
+        name: file.name,
+        contentType: file.contentType
+      };
+    });
+    res.end(JSON.stringify(files, null, 2));
+  });
+}
+module.exports.getFiles = getFiles;
+
 function getFile(req, res) {
   var filename = req.url.split('/').pop();
   bucket.createReadStream(filename)
@@ -42,7 +84,7 @@ function _handleResponse(res) {
   return function(err, result) {
     if (err) {
       res.writeHead(err.code);
-      res.end(err.message);
+      res.end(JSON.stringify(err));
       return;
     }
     res.end(JSON.stringify(result, null, 2));

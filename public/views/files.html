@@ -1,0 +1,25 @@
+<h1>Files</h1>
+
+<ul>
+  <li ng-repeat="file in files">
+    <a ng-href="api/files/{{file.name}}">
+      {{file.name}}
+    </a>
+  </li>
+</ul>
+
+<h2>Upload</h2>
+<form>
+  <label>
+    Name:
+    <input ng-model="name" ng-disabled="saving">
+  </label>
+  <label ng-show="name">
+    File:
+    <input type="file" ng-file-select="onFileSelect($files)" ng-disabled="saving">
+  </label>
+</form>
+
+<div ng-if="saving && saved">
+  Saved successfully!
+</div>

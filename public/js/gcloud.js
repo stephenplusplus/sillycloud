@@ -1,10 +1,25 @@
 angular
-  .module('gcloud', ['ngRoute'])
+  .module('gcloud', ['ngRoute', 'angularFileUpload'])
   .config(function($routeProvider) {
     $routeProvider
       .when('/', {
         controller: 'HomeCtrl',
         templateUrl: 'views/home.html'
+      })
+      .when('/files', {
+        controller: 'FilesCtrl',
+        templateUrl: 'views/files.html',
+        resolve: {
+          files: function($http) {
+            return $http.get('/api/files').then(function(user) {
+              return user.data;
+            });
+          }
+        }
+      })
+      .when('/file/:id', {
+        controller: 'FileCtrl',
+        templateUrl: 'views/file.html'
       })
       .when('/users', {
         controller: 'UsersCtrl',
@@ -32,10 +47,36 @@ angular
   })
 
   .controller('HomeCtrl', function() {})
+  .controller('FilesCtrl', function($scope, files, $upload, $http, $timeout) {
+    $scope.files = files;
+
+    $scope.onFileSelect = function($files) {
+      $scope.saving = true;
+      $upload
+        .upload({
+          url: '/api/files',
+          method: 'POST',
+          data: { name: $scope.name },
+          file: $files[0]
+        })
+        .then(function() {
+          $scope.saved = true;
+          $scope.name = '';
+          $http.get('/api/files').then(function(res) {
+            $scope.files = res.data;
+          });
+          $timeout(function() { $scope.saving = $scope.saved = false; }, 3000);
+        }, function() {
+          $scope.saving = $scope.saved = false;
+        });
+    };
+  })
+  .controller('FileCtrl', function() {})
   .controller('UsersCtrl', function($scope, users, $http, $timeout) {
     $scope.users = users;
 
     $scope.addUser = function(name) {
+      $scope.saving = true;
       $http
         .post('/api/users', { name: name })
         .then(function() {
@@ -46,8 +87,7 @@ angular
           });
           $timeout(function() { $scope.saving = $scope.saved = false; }, 3000);
         }, function() {
-          $scope.saved = false;
-          $timeout(function() { $scope.saving = false; }, 3000);
+          $scope.saving = $scope.saved = false;
         });
     };
   })
@@ -75,8 +115,7 @@ angular
           $scope.saved = true;
           $timeout(function() { $scope.saving = $scope.saved = false; }, 3000);
         }, function() {
-          $scope.saved = false;
-          $timeout(function() { $scope.saving = false; }, 3000);
+          $scope.saving = $scope.saved = false;
         });
     };
   });
