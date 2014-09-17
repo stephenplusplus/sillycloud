@@ -3,11 +3,11 @@
 var fs = require('fs');
 var multiparty = require('multiparty');
 
-var PROJECT_CONFIG = require('./project.conf.json');
-var gcloud = require('gcloud')(PROJECT_CONFIG);
+var PROJECT_CONFIG = require('./project.conf.js');
 
-var dataset = gcloud.datastore.dataset();
-var bucket = gcloud.storage.bucket();
+var gcloud = require('gcloud');
+var dataset = new gcloud.datastore.Dataset(PROJECT_CONFIG);
+var bucket = new gcloud.storage.Bucket(PROJECT_CONFIG);
 
 function getUsers(req, res) {
   var query = dataset.createQuery(['Users']);
