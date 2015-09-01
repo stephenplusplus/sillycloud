@@ -1,9 +1,9 @@
 {
   "name": "sillycloud",
-  "version": "2.0.0",
+  "version": "4.0.0",
   "main": "index.js",
   "dependencies": {
-    "gcloud": "git+https://github.com/stephenplusplus/gcloud-node.git#spp--gae",
+    "gcloud": "0.20.0",
     "multiparty": "^3.3.2"
   }
 }

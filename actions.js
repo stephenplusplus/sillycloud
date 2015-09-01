@@ -1,8 +1,8 @@
 var fs = require("fs")
 var multiparty = require("multiparty")
 
-var gcloud = require("gcloud")({ projectId: "nth-circlet-705", keyFilename: "/Users/stephen/dev/keyfile.json" })
-var dataset = gcloud.datastore.dataset()
+var gcloud = require("gcloud")({ projectId: "nth-circlet-705" })
+var dataset = gcloud.datastore.dataset({ projectId: "nth-circlet-705" })
 var bucket = gcloud.storage().bucket("stephen-has-a-new-bucket")
 
 module.exports.getUsers = function (req, res) {
